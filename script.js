@@ -109,14 +109,8 @@ function normalizeStopName(name, index) {
 
 function buildRouteFromRaw(rawStops) {
   const route = [];
-  const seen = new Set();
 
   rawStops.forEach((stop, index) => {
-    const key = `${stop.lat.toFixed(6)}:${stop.lng.toFixed(6)}`;
-    if (seen.has(key)) {
-      return;
-    }
-    seen.add(key);
     route.push({
       id: `stop-${route.length + 1}`,
       name: normalizeStopName(stop.name, route.length),
