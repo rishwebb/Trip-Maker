@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Trip Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/@tmcw/togeojson@5.8.1/dist/togeojson.umd.js"></script>
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__top">
+        <div>
+          <p class="eyebrow">Trip Tracker</p>
+          <h1>Darjeeling Route</h1>
+        </div>
+        <button class="icon-button" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
+      </div>
+
+      <div class="sidebar__section sidebar__section--hero">
+        <p class="hero-copy">Track a KML route, complete stops, manage participants, and collect route suggestions in one responsive dashboard.</p>
+        <label class="file-chip" for="kmlInput">Load KML file</label>
+        <input id="kmlInput" type="file" accept=".kml,.kmz,.xml" hidden />
+        <div class="mini-actions">
+          <button class="ghost-button" id="resetRouteButton">Reset</button>
+          <button class="primary-button" id="suggestChangeButton">Suggest</button>
+        </div>
+      </div>
+
+      <div class="sidebar__section">
+        <div class="section-heading">
+          <h2>Stops</h2>
+          <div class="section-actions">
+            <button class="nav-arrow-btn" id="prevStopBtn" aria-label="Previous Stop">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <span id="stopCountLabel">0 stops</span>
+            <button class="nav-arrow-btn" id="nextStopBtn" aria-label="Next Stop">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="stop-list" id="stopList"></div>
+      </div>
+
+      <div class="sidebar__section">
+        <div class="section-heading">
+          <h2>Suggestions</h2>
+          <span id="suggestionCountLabel">0 saved</span>
+        </div>
+        <div class="suggestion-list" id="suggestionList"></div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <div class="topbar__left">
+          <div>
+            <p class="eyebrow">Interactive route view</p>
+            <h2>Trip tracking dashboard</h2>
+          </div>
+          <p class="topbar__subcopy">Loaded automatically from the provided KML. Use the file picker to replace the route.</p>
+        </div>
+        <div class="topbar__right">
+          <div class="legend-pill legend-pill--route">Route</div>
+          <div class="legend-pill legend-pill--participants">Participants</div>
+          <div class="legend-pill legend-pill--completed">Completed</div>
+        </div>
+        <button class="icon-button mobile-menu-btn" id="mobileSidebarToggle" aria-label="Open menu">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        </button>
+      </header>
+
+      <div class="dropdown-container">
+        <details class="stats-dropdown">
+          <summary class="stats-dropdown-summary">Dashboard Panels & Stats</summary>
+          <section class="dashboard-grid">
+            <article class="stat-card stat-card--accent">
+              <span class="stat-card__label">Total Stops</span>
+              <strong id="totalStopsValue">0</strong>
+              <span class="stat-card__meta">Numbered from route order</span>
+            </article>
+            <article class="stat-card">
+              <span class="stat-card__label">Route Distance</span>
+              <strong id="routeDistanceValue">0 km</strong>
+              <span class="stat-card__meta">Calculated from the loaded points</span>
+            </article>
+            <article class="stat-card">
+              <span class="stat-card__label">Completion</span>
+              <strong id="completionValue">0%</strong>
+              <span class="stat-card__meta" id="completionMeta">0 completed</span>
+            </article>
+            
+            <article class="panel-card panel-card--progress">
+              <div class="panel-header">
+                <h3>Progress</h3>
+                <span id="remainingStopsValue">0 remaining</span>
+              </div>
+              <div class="progress-bar"><span id="progressBarFill"></span></div>
+              <div class="panel-row">
+                <span>Completed Stops</span>
+                <strong id="completedStopsValue">0</strong>
+              </div>
+              <div class="panel-row">
+                <span>Remaining Stops</span>
+                <strong id="remainingStopsCountValue">0</strong>
+              </div>
+            </article>
+
+            <article class="panel-card panel-card--next">
+              <div class="panel-header">
+                <h3>Next Stop</h3>
+                <span id="nextStopETA">Upcoming</span>
+              </div>
+              <div class="next-stop__number" id="nextStopNumber">--</div>
+              <div class="next-stop__name" id="nextStopName">No stop selected</div>
+              <div class="panel-row">
+                <span>Distance Remaining</span>
+                <strong id="nextStopDistance">0 km</strong>
+              </div>
+            </article>
+          </section>
+        </details>
+      </div>
+
+      <section class="map-stage">
+        <div id="map"></div>
+        <div class="map-nav-overlay">
+          <button class="nav-arrow-btn map-nav-btn" id="mapPrevStopBtn" aria-label="Previous Stop">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <span id="mapStopCountLabel" class="map-stop-count">Stop 1 of 18</span>
+          <button class="nav-arrow-btn map-nav-btn" id="mapNextStopBtn" aria-label="Next Stop">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <div class="dropdown-container">
+        <details class="stats-dropdown">
+          <summary class="stats-dropdown-summary">Participants & Admin Panel</summary>
+          <section class="participants-grid">
+            <article class="panel-card" id="participantsPanel">
+              <div class="section-heading">
+                <h2>Participants</h2>
+                <div class="section-actions">
+                  <span>Draggable avatars</span>
+                </div>
+              </div>
+              <p class="panel-copy">Drag the participant markers directly on the map. Click any avatar to view the current coordinates.</p>
+              <div class="participant-list" id="participantList"></div>
+            </article>
+
+            <article class="panel-card" id="adminPanel">
+              <div class="section-heading">
+                <h2>Admin Panel</h2>
+                <div class="section-actions">
+                  <span>Local storage</span>
+                </div>
+              </div>
+              <p class="panel-copy">Suggestions submitted through the modal are stored locally in the browser.</p>
+              <div class="admin-list" id="adminSuggestions"></div>
+            </article>
+          </section>
+        </details>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="suggestionModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-top">
+        <div>
+          <p class="eyebrow">Route feedback</p>
+          <h2 id="modalTitle">Suggest Change</h2>
+        </div>
+        <button class="icon-button" id="closeModalButton" aria-label="Close modal">×</button>
+      </div>
+
+      <form id="suggestionForm" class="modal-form">
+        <label>
+          <span>Name</span>
+          <input type="text" name="name" placeholder="Your name" required />
+        </label>
+        <label>
+          <span>Suggested change</span>
+          <textarea name="change" rows="4" placeholder="What should be adjusted?" required></textarea>
+        </label>
+        <label>
+          <span>Reason</span>
+          <textarea name="reason" rows="4" placeholder="Why is this change helpful?" required></textarea>
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="ghost-button" id="cancelSuggestionButton">Cancel</button>
+          <button type="submit" class="primary-button">Submit suggestion</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
