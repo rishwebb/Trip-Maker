@@ -30,13 +30,14 @@ const DEFAULT_ROUTE = [
 ];
 
 const PARTICIPANTS = [
-  { name: 'Alex', color: '#63d6ff' },
-  { name: 'Ben', color: '#7cf7c8' },
-  { name: 'Charlie', color: '#ffd166' },
-  { name: 'David', color: '#ff7c88' }
+  { name: 'Rishav', color: '#63d6ff' },
+  { name: 'Trisha', color: '#7cf7c8' },
+  { name: 'Poushali', color: '#ffd166' },
+  { name: 'Soumit', color: '#ff7c88' }
 ];
 
 const STORAGE_KEY = 'trip-tracker-suggestions-v1';
+const IDENTITY_KEY = 'trip-tracker-identity';
 
 const appState = {
   route: [],
@@ -769,6 +770,25 @@ function registerEvents() {
   });
 }
 
+function showIdentityPicker() {
+  const overlay = document.getElementById('identityOverlay');
+  if (!overlay) return;
+  overlay.classList.add('is-visible');
+
+  const options = document.getElementById('identityOptions');
+  options.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-identity]');
+    if (!btn) return;
+    const name = btn.dataset.identity;
+    sessionStorage.setItem(IDENTITY_KEY, name);
+    overlay.classList.remove('is-visible');
+    overlay.classList.add('is-closing');
+    setTimeout(() => {
+      overlay.style.display = 'none';
+    }, 400);
+  });
+}
+
 function initializeMap() {
   appState.map = L.map('map', {
     zoomControl: true,
@@ -792,6 +812,7 @@ function startApp() {
   registerEvents();
   loadDefaultRoute();
   renderSuggestionPanels();
+  showIdentityPicker();
 }
 
 document.addEventListener('DOMContentLoaded', startApp);
