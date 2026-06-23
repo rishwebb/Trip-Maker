@@ -2,31 +2,31 @@
 
 const DEFAULT_ROUTE = [
   { name: 'Chakdaha', lat: 23.07655846201645, lng: 88.52904932733068 },
-  { name: 'Stop 2', lat: 22.5676943, lng: 88.3711642 },
-  { name: 'Stop 3', lat: 26.685063, lng: 88.4439466 },
-  { name: 'Stop 4', lat: 27.0377502, lng: 88.2631107 },
-  { name: 'Stop 5', lat: 27.0448562, lng: 88.2677211 },
-  { name: 'Stop 6', lat: 27.0377502, lng: 88.2631107 },
-  { name: 'Stop 7', lat: 26.9966667, lng: 88.2944444 },
-  { name: 'Stop 8', lat: 27.0283932, lng: 88.2595268 },
-  { name: 'Stop 9', lat: 27.0377502, lng: 88.2631107 },
-  { name: 'Stop 10', lat: 27.0265708, lng: 88.232376 },
-  { name: 'Stop 11', lat: 27.0288389, lng: 88.2410744 },
-  { name: 'Stop 12', lat: 27.016892, lng: 88.2465488 },
-  { name: 'Stop 13', lat: 27.0116652, lng: 88.2503642 },
-  { name: 'Stop 14', lat: 27.0585457, lng: 88.2531361 },
-  { name: 'Stop 15', lat: 27.0377502, lng: 88.2631107 },
-  { name: 'Stop 16', lat: 27.0448562, lng: 88.2677211 },
-  { name: 'Stop 17', lat: 27.0377502, lng: 88.2631107 },
-  { name: 'Stop 18', lat: 27.0128071, lng: 88.1971898 },
-  { name: 'Stop 19', lat: 26.8908123, lng: 88.1824885 },
-  { name: 'Stop 20', lat: 26.9486186, lng: 88.1208501 },
-  { name: 'Stop 21', lat: 27.0377502, lng: 88.2631107 },
-  { name: 'Stop 22', lat: 27.0448562, lng: 88.2677211 },
-  { name: 'Stop 23', lat: 27.0377502, lng: 88.2631107 },
-  { name: 'Stop 24', lat: 26.684225, lng: 88.4428012 },
-  { name: 'Stop 25', lat: 22.5671707, lng: 88.3707202 },
-  { name: 'Stop 26', lat: 23.0765247, lng: 88.5293319 }
+  { name: 'Sealdah Station', lat: 22.5676943, lng: 88.3711642 },
+  { name: 'NJP Station', lat: 26.685063, lng: 88.4439466 },
+  { name: 'Darjeeling Station', lat: 27.0377502, lng: 88.2631107 },
+  { name: 'Darjeeling Mall Road', lat: 27.0448562, lng: 88.2677211 },
+  { name: 'Darjeeling Station', lat: 27.0377502, lng: 88.2631107 },
+  { name: 'Tiger Hill', lat: 26.9966667, lng: 88.2944444 },
+  { name: 'Japanese Buddhist Temple', lat: 27.0283932, lng: 88.2595268 },
+  { name: 'Darjeeling Station', lat: 27.0377502, lng: 88.2631107 },
+  { name: 'Rock Garden', lat: 27.0265708, lng: 88.232376 },
+  { name: 'Orange Valley Tea Outlet', lat: 27.0288389, lng: 88.2410744 },
+  { name: 'Batasia Loop', lat: 27.016892, lng: 88.2465488 },
+  { name: 'Ghoom Monastery', lat: 27.0116652, lng: 88.2503642 },
+  { name: 'Zoo', lat: 27.0585457, lng: 88.2531361 },
+  { name: 'Darjeeling Station', lat: 27.0377502, lng: 88.2631107 },
+  { name: 'Darjeeling Mall Road', lat: 27.0448562, lng: 88.2677211 },
+  { name: 'Darjeeling Station', lat: 27.0377502, lng: 88.2631107 },
+  { name: 'Lepchajagat Pine Forest', lat: 27.0128071, lng: 88.1971898 },
+  { name: 'Mirik Lake', lat: 26.8908123, lng: 88.1824885 },
+  { name: 'Nepal Border', lat: 26.9486186, lng: 88.1208501 },
+  { name: 'Darjeeling Station', lat: 27.0377502, lng: 88.2631107 },
+  { name: 'Darjeeling Mall Road', lat: 27.0448562, lng: 88.2677211 },
+  { name: 'Darjeeling Station', lat: 27.0377502, lng: 88.2631107 },
+  { name: 'NJP Station', lat: 26.684225, lng: 88.4428012 },
+  { name: 'Sealdah Station', lat: 22.5671707, lng: 88.3707202 },
+  { name: 'Chakdaha', lat: 23.0765247, lng: 88.5293319 }
 ];
 
 const PARTICIPANTS = [
@@ -310,7 +310,7 @@ function renderStopList() {
       menuDropdown.classList.add('is-hidden');
       editableSpan.setAttribute('contenteditable', 'true');
       editableSpan.focus();
-      
+
       const selection = window.getSelection();
       const range = document.createRange();
       range.selectNodeContents(editableSpan);
@@ -518,7 +518,7 @@ function renderMapLayers() {
       lng: offsetLng
     };
     appState.participants.push(participantEntry);
-    
+
     // As per requirement, A B C D participant markers should not be visible on the map.
     appState.participantMarkers.push({ participant: participantEntry, marker: null });
   });
@@ -551,17 +551,17 @@ function setRoute(rawStops, options = {}) {
 
 function navigateStops(direction) {
   if (!appState.route.length) return;
-  
+
   let currentIndex = appState.route.findIndex(stop => stop.id === appState.selectedStopId);
   if (currentIndex === -1) currentIndex = 0;
-  
+
   let nextIndex = currentIndex + direction;
   if (nextIndex < 0) nextIndex = appState.route.length - 1;
   if (nextIndex >= appState.route.length) nextIndex = 0;
-  
+
   const nextStop = appState.route[nextIndex];
   focusStop(nextStop.id);
-  
+
   const activeItem = elements.stopList.querySelector(`[data-stop-id="${nextStop.id}"]`);
   if (activeItem) {
     activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
