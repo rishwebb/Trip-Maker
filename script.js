@@ -784,25 +784,27 @@ function showIdentityPicker() {
     overlay.classList.remove('is-visible');
     overlay.classList.add('is-closing');
     
-    setTimeout(() => {
-      overlay.style.display = 'none';
+    // Trigger welcome screen IMMEDIATELY so it fades in underneath the overlay
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    const welcomeName = document.getElementById('welcomeName');
+    
+    if (welcomeScreen && welcomeName) {
+      welcomeName.textContent = `Welcome ${name}`;
+      welcomeScreen.classList.add('is-active');
       
-      // Trigger welcome screen
-      const welcomeScreen = document.getElementById('welcomeScreen');
-      const welcomeName = document.getElementById('welcomeName');
-      if (welcomeScreen && welcomeName) {
-        welcomeName.textContent = `Welcome ${name}`;
-        welcomeScreen.classList.add('is-active');
-        
-        // Hide welcome screen after 2.5 seconds and zoom to stop 1
-        setTimeout(() => {
-          welcomeScreen.classList.remove('is-active');
-          if (appState.route.length > 0) {
-             focusStop(appState.route[0].id);
-          }
-        }, 2500);
-      }
-    }, 400);
+      // Hide the identity overlay from DOM completely after it finishes closing
+      setTimeout(() => {
+        overlay.style.display = 'none';
+      }, 400);
+
+      // Hide welcome screen after 2.5 seconds and zoom to stop 1
+      setTimeout(() => {
+        welcomeScreen.classList.remove('is-active');
+        if (appState.route.length > 0) {
+           focusStop(appState.route[0].id);
+        }
+      }, 2500);
+    }
   });
 }
 
