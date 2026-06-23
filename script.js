@@ -783,8 +783,25 @@ function showIdentityPicker() {
     sessionStorage.setItem(IDENTITY_KEY, name);
     overlay.classList.remove('is-visible');
     overlay.classList.add('is-closing');
+    
     setTimeout(() => {
       overlay.style.display = 'none';
+      
+      // Trigger welcome screen
+      const welcomeScreen = document.getElementById('welcomeScreen');
+      const welcomeName = document.getElementById('welcomeName');
+      if (welcomeScreen && welcomeName) {
+        welcomeName.textContent = `Welcome ${name}`;
+        welcomeScreen.classList.add('is-active');
+        
+        // Hide welcome screen after 2.5 seconds and zoom to stop 1
+        setTimeout(() => {
+          welcomeScreen.classList.remove('is-active');
+          if (appState.route.length > 0) {
+             focusStop(appState.route[0].id);
+          }
+        }, 2500);
+      }
     }, 400);
   });
 }
