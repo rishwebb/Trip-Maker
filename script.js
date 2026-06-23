@@ -6,19 +6,27 @@ const DEFAULT_ROUTE = [
   { name: 'Stop 3', lat: 26.685063, lng: 88.4439466 },
   { name: 'Stop 4', lat: 27.0377502, lng: 88.2631107 },
   { name: 'Stop 5', lat: 27.0448562, lng: 88.2677211 },
-  { name: 'Stop 6', lat: 26.9966667, lng: 88.2944444 },
-  { name: 'Stop 7', lat: 27.0283932, lng: 88.2595268 },
-  { name: 'Stop 8', lat: 27.0265708, lng: 88.232376 },
-  { name: 'Stop 9', lat: 27.0288389, lng: 88.2410744 },
-  { name: 'Stop 10', lat: 27.016892, lng: 88.2465488 },
-  { name: 'Stop 11', lat: 27.0116652, lng: 88.2503642 },
-  { name: 'Stop 12', lat: 27.0585457, lng: 88.2531361 },
-  { name: 'Stop 13', lat: 27.0128071, lng: 88.1971898 },
-  { name: 'Stop 14', lat: 26.8908123, lng: 88.1824885 },
-  { name: 'Stop 15', lat: 26.9486186, lng: 88.1208501 },
-  { name: 'Stop 16', lat: 26.684225, lng: 88.4428012 },
-  { name: 'Stop 17', lat: 22.5671707, lng: 88.3707202 },
-  { name: 'Stop 18', lat: 23.0765247, lng: 88.5293319 }
+  { name: 'Stop 6', lat: 27.0377502, lng: 88.2631107 },
+  { name: 'Stop 7', lat: 26.9966667, lng: 88.2944444 },
+  { name: 'Stop 8', lat: 27.0283932, lng: 88.2595268 },
+  { name: 'Stop 9', lat: 27.0377502, lng: 88.2631107 },
+  { name: 'Stop 10', lat: 27.0265708, lng: 88.232376 },
+  { name: 'Stop 11', lat: 27.0288389, lng: 88.2410744 },
+  { name: 'Stop 12', lat: 27.016892, lng: 88.2465488 },
+  { name: 'Stop 13', lat: 27.0116652, lng: 88.2503642 },
+  { name: 'Stop 14', lat: 27.0585457, lng: 88.2531361 },
+  { name: 'Stop 15', lat: 27.0377502, lng: 88.2631107 },
+  { name: 'Stop 16', lat: 27.0448562, lng: 88.2677211 },
+  { name: 'Stop 17', lat: 27.0377502, lng: 88.2631107 },
+  { name: 'Stop 18', lat: 27.0128071, lng: 88.1971898 },
+  { name: 'Stop 19', lat: 26.8908123, lng: 88.1824885 },
+  { name: 'Stop 20', lat: 26.9486186, lng: 88.1208501 },
+  { name: 'Stop 21', lat: 27.0377502, lng: 88.2631107 },
+  { name: 'Stop 22', lat: 27.0448562, lng: 88.2677211 },
+  { name: 'Stop 23', lat: 27.0377502, lng: 88.2631107 },
+  { name: 'Stop 24', lat: 26.684225, lng: 88.4428012 },
+  { name: 'Stop 25', lat: 22.5671707, lng: 88.3707202 },
+  { name: 'Stop 26', lat: 23.0765247, lng: 88.5293319 }
 ];
 
 const PARTICIPANTS = [
@@ -342,7 +350,9 @@ function renderParticipantPanel() {
       const marker = appState.participantMarkers.find((entry) => entry.participant.id === participant.id);
       if (marker && marker.marker) {
         marker.marker.openPopup();
-        appState.map.panTo(marker.marker.getLatLng(), { animate: true, duration: 0.6 });
+        appState.map.flyTo(marker.marker.getLatLng(), 18, {
+          duration: 1.5
+        });
       }
     });
     elements.participantList.appendChild(chip);
@@ -575,7 +585,9 @@ function focusStop(stopId) {
   const markerEntry = appState.stopMarkers.get(stopId);
   if (markerEntry) {
     markerEntry.marker.openPopup();
-    appState.map.setView([stop.lat, stop.lng], Math.max(appState.map.getZoom(), 10), { animate: true });
+    appState.map.flyTo([stop.lat, stop.lng], 18, {
+      duration: 1.5
+    });
   }
 }
 
